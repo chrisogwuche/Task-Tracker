@@ -1,0 +1,23 @@
+#spring.datasource.url=jdbc:postgresql://localhost:5432/eTask
+#spring.datasource.username=postgres
+#spring.datasource.password=654321
+#spring.datasource.driver-class-name=org.postgresql.Driver
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eTask
+    username: postgres
+    password: 654321
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+

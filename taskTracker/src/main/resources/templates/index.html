@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Task Tracker
+    </title>
+    <link rel="preconnect" th:href="@{https://fonts.gstatic.com}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" th:href="@{/css/grid.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+
+
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img th:src="@{/images/user-image.jpg}" alt="Task traker logo">
+            <div class="sidebar-close" id="sidebar-close">
+                <i class='bx bx-left-arrow-alt'></i>
+            </div>
+        </div>
+        <div class="sidebar-user">
+            <div class="sidebar-user-info">
+                <img th:src="@{/images/user-image.png}" alt="User picture" class="profile-image">
+                <div class="sidebar-user-name">
+                    Chris Ogwuche
+                </div>
+            </div>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#">
+                    <i class='bx bx-home'></i>
+                    <span class="tablink" onclick="openPage('home',this,'blue')" id="defaultOpen">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bx-category'></i>
+                    <span class="tablink" onclick="openPage('add',this,'blue')">Add Task</span>
+                </a>
+            </li>
+            
+            <li class="sidebar-submenu">
+                <a href="#" class="sidebar-menu-dropdown">
+                    <i class='bx bx-category'></i>
+                    <span>View Tasks</span>
+                    <div class="dropdown-icon"></div>
+                </a>
+                <ul class="sidebar-menu sidebar-menu-dropdown-content">
+                    <li>
+                        <a href="#">
+                            <span class="tablink" onclick="openPage('pendingTask',this,'blue')">View Pending Task</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="tablink" onclick="openPage('taskInProgress',this,'blue')">View Task In-Progress</span>
+                           
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span class="tablink" onclick="openPage('completedTask',this,'blue')">View Completed Task</span>
+                            
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="sidebar-submenu">
+                <a href="#" class="sidebar-menu-dropdown">
+                    <i class='bx bx-cog'></i>
+                    <span>settings</span>
+                    <div class="dropdown-icon"></div>
+                </a>
+                <ul class="sidebar-menu sidebar-menu-dropdown-content">
+                    <li>
+                        <a href="#" class="darkmode-toggle" id="darkmode-toggle">
+                            darkmode
+                            <span class="darkmode-switch"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+  
+    <div id="home" class="main">
+        <div class="main-header">
+            <div class="mobile-toggle" id="mobile-toggle">
+                <i class='bx bx-menu-alt-right'></i>
+            </div>
+            <div class="main-title">
+                Task Tracker
+                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="row">
+                <div class="col-12">
+                    <!-- ORDERS TABLE -->
+                    <div class="box">
+                        <div class="box-header">
+                            All Task
+                        </div>
+                        <div class="box-body overflow-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Date Created</th>
+                                        <th>Task status</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="task:${allTask}">
+                                        <td>#001</td>
+                                        <td>
+                                            <div class="order-owner">
+                                                <img th:src="@{/images/task.png}" alt="user image">
+                                                <span th:text="${task.getTitle()}"></span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${task.getCreatedAT()}"></td>
+
+                                        <td th:switch="${task.getStatus().toString()}">
+                                            <div th:case="'PENDING'" class="payment-status payment-pending">
+                                                <div class="dot"></div>
+                                                <span>Pending</span>
+                                            </div>
+                                            <div th:case="'IN_PROGRESS'" class="payment-status payment-pending">
+                                                <div class="dot"></div>
+                                                <span>In Progress</span>
+                                            </div>
+                                            <div th:case="*" class="payment-status payment-paid">
+                                                <div class="dot"></div>
+                                                <span>Completed</span>
+                                            </div>
+                                        </td>
+<!--                                        <td th:if="${task.getStatus().COMPLETED == true}">-->
+<!--                                            <div class="payment-status payment-paid">-->
+<!--                                                <div class="dot"></div>-->
+<!--                                                <span>Completed</span>-->
+<!--                                            </div>-->
+<!--                                        </td>-->
+                                        <td>
+                                            <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                <option></option>
+                                                <option th:value="@{/edit(id=${task.getId()})}">Edit</option>
+                                                <option th:value="@{/pending(id=${task.getId()})}">Move to Pending</option>
+                                                <option th:value="@{/in-progress(id=${task.getId()})}">Move to in-Progress</option>
+                                                <option th:value="@{/completed(id=${task.getId()})}">Move to Completed</option>
+                                                <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="add" class="main">
+        <div class="main-header">
+            <div class="mobile-toggle" id="mobile-toggle">
+                <i class='bx bx-menu-alt-right'></i>
+            </div>
+            <div class="main-title">
+                Task Tracker
+                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="row">
+                <div class="col-12">
+                    <!-- ORDERS TABLE -->
+                    <div class="box">
+                        <div class="box-header">
+                            Add New Task
+                        </div>
+                        <div class="box-body overflow-scroll">
+                            <form th:action="@{/add-task}" th:object="${userTaskDto}" th:method="post">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th>
+                                                <button  href="#" style="color:blue; border: 1px gray solid; padding: 6px 20px;">Create</button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <h3>
+                                                    Task Title:
+                                                    <input type="text" name="taskTitle" style="width: 70%; height: 40px; font-size: 20px;" th:field="*{title}">
+                                                </h3>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <h3 style="display: flex;">
+                                                    Task Description:
+                                                     <textarea id="w3review" name="w3review" rows="3" style="font-size: 18px; width: 70%;" th:field="*{description}"></textarea>
+                                                </h3>
+                                                
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+ <div id="pendingTask" class="main">
+        <div class="main-header">
+            <div class="mobile-toggle" id="mobile-toggle">
+                <i class='bx bx-menu-alt-right'></i>
+            </div>
+            <div class="main-title">
+                Task Tracker
+                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="row">
+                <div class="col-12">
+                    <!-- ORDERS TABLE -->
+                    <div class="box">
+                        <div class="box-header">
+                            Pending Task
+                        </div>
+                        <div class="box-body overflow-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Date Created</th>
+                                        <th>Task status</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="task: ${pendingTask}">
+                                        <td>#001</td>
+                                        <td>
+                                            <div class="order-owner">
+                                                <img th:src="@{/images/task.png}" alt="user image">
+                                                <span th:text="${task.getTitle()}"></span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${task.getCreatedAT()}"></td>
+                                        <td>
+                                            <div class="payment-status payment-pending">
+                                                <div class="dot"></div>
+                                                <span>Pending</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                <option></option>
+                                                <option th:value="@{/in-progress(id=${task.getId()})}">Move to Task in Progress</option>
+                                                <option th:value="@{/completed(id=${task.getId()})}">Move to Completed Task</option>
+                                                <option th:value="@{/delete(id=${task.getId()})}">Delete Task</option>
+
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+ <div id="taskInProgress" class="main">
+        <div class="main-header">
+            <div class="mobile-toggle" id="mobile-toggle">
+                <i class='bx bx-menu-alt-right'></i>
+            </div>
+            <div class="main-title">
+                Task Tracker
+                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="row">
+                <div class="col-12">
+                    <!-- ORDERS TABLE -->
+                    <div class="box">
+                        <div class="box-header">
+                            Task in Progress
+                        </div>
+                        <div class="box-body overflow-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Date Created</th>
+                                        <th>Task status</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="task:${inProgressTask}">
+                                        <td>#001</td>
+                                        <td>
+                                            <div class="order-owner">
+                                                <img th:src="@{/images/task.png}" alt="user image">
+                                                <span th:text="${task.getTitle()}"></span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${task.getCreatedAT()}"></td>
+                                        <td>
+                                            <div class="payment-status payment-pending">
+                                                <div class="dot"></div>
+                                                <span>In Progress</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                <option></option>
+                                                <option th:value="@{/pending(id=${task.getId()})}">Move to Pending</option>
+                                                <option th:value="@{/completed(id=${task.getId()})}">Move to Completed</option>
+                                                <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+ <div id="completedTask" class="main">
+        <div class="main-header">
+            <div class="mobile-toggle" id="mobile-toggle">
+                <i class='bx bx-menu-alt-right'></i>
+            </div>
+            <div class="main-title">
+                Task Tracker
+                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="row">
+                <div class="col-12">
+                    <!-- ORDERS TABLE -->
+                    <div class="box">
+                        <div class="box-header">
+                            Task Completed
+                        </div>
+                        <div class="box-body overflow-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Date Created</th>
+                                        <th>Task status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="task: ${completedTask}">
+                                        <td>#001</td>
+                                        <td>
+                                            <div class="order-owner">
+                                                <img th:src="@{/images/task.png}" alt="user image">
+                                                <span th:text="${task.getTitle()}"></span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${task.getCreatedAT()}"></td>
+                                        <td>
+                                            <div class="payment-status payment-paid">
+                                                <div class="dot"></div>
+                                                <span>Completed</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="overlay"></div>
+    <script th:src="@{/js/app.js}"></script>
+
+    <script>
+        function openPage(pageName,elmnt,color) {
+
+          var i, tabcontent, tablinks;
+          tabcontent = document.getElementsByClassName("main");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+
+          tablinks = document.getElementsByClassName("tablink");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.color= "";
+          }
+         
+          document.getElementById(pageName).style.display = "block";
+           elmnt.style.color = color;
+
+        }
+         document.getElementById("defaultOpen").click();
+    </script>
+
+</body>
+
+</html>
+
+
+
+

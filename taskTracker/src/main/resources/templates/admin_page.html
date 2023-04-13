@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+
+<div>
+    <form action="#" th:action="@{/addItems}" th:object="${adminProducts}" method="post">
+        <div>
+            <input type="text" th:field="*{productName}" placeholder="product_name"/>
+            <input type="text" th:field="*{sellingPrice}" placeholder="selling_price"/>
+            <input type="text" th:field="*{costPrice}" placeholder="cost_price"/>
+            <input type="text" th:field="*{quantity}" placeholder="quantity"/>
+            <input type="text" th:field="*{filePath}" placeholder="file_path"/>
+            <input type="text" th:field="*{category}" placeholder="category">
+        </div>
+        <div>
+            <button type="submit">submit</button>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>
