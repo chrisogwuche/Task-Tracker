@@ -1,94 +1,44 @@
 package com.decagon.taskTracker.controller;
 
-import com.decagon.taskTracker.dto.UserTaskDto;
+import com.decagon.taskTracker.dto.UserTaskDTO;
 import com.decagon.taskTracker.entity.UserTask;
 import com.decagon.taskTracker.serviceImpl.TaskImpl;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
-@Slf4j
 public class indexController {
 
     @Autowired
-    private TaskImpl addTaskImpl;
+    private TaskImpl taskImpl;
 
-
-    @GetMapping("/")
+    @GetMapping("/index")
     public String goToIndex(Model model){
-        model.addAttribute("userTaskDto", new UserTaskDto());
-        model.addAttribute("pendingTask", getPendingTask());
-        model.addAttribute("inProgressTask", getInProgressTask());
-        model.addAttribute("completedTask", getCompletedTask());
-        model.addAttribute("allTask", getAllTask());
+
+        model.addAttribute("userTaskDto", new UserTaskDTO());
+
+        model.addAttribute("pendingTask", taskImpl.getPendingTask());
+        model.addAttribute("inProgressTask", taskImpl.getInProgressTask());
+        model.addAttribute("completedTask", taskImpl.getCompletedTask());
+        model.addAttribute("allTask", taskImpl.getAllTask());
 
         return "index";
     }
 
-
     @PostMapping("/add-task")
-    public String addTask(@ModelAttribute UserTaskDto userTaskDto, Model model){
+    public String addTask(@ModelAttribute UserTaskDTO userTaskDto, Model model){
         if(userTaskDto.getTitle().isEmpty()){
-           return"redirect:/";
+           return"redirect:/index";
         }
         UserTask userTask = new UserTask(userTaskDto.getTitle(), userTaskDto.getDescription());
-        log.info("i am save status: " +addTaskImpl.saveTask(userTask));
-        model.addAttribute("status",addTaskImpl.saveTask(userTask));
-        return "redirect:/";
-    }
-
-
-    private List<UserTaskDto> getPendingTask(){
-        List<UserTaskDto> userDtoList = new ArrayList<>();
-        for(UserTask task: addTaskImpl.getPendingTask()){
-            userDtoList
-                    .add(new UserTaskDto(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
-                            ,task.getCreatedAT()));
-        }
-        return userDtoList;
-    }
-
-
-    private List<UserTaskDto> getInProgressTask(){
-        List<UserTaskDto> userDtoList = new ArrayList<>();
-        for(UserTask task: addTaskImpl.getInProgressTask()){
-            userDtoList
-                    .add(new UserTaskDto(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
-                            ,task.getCreatedAT()));
-        }
-
-        return userDtoList;
-    }
-
-
-    private List<UserTaskDto> getCompletedTask(){
-        List<UserTaskDto> userDtoList = new ArrayList<>();
-        for(UserTask task: addTaskImpl.getCompletedTask()){
-            userDtoList
-                    .add(new UserTaskDto(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
-                            ,task.getCreatedAT()));
-        }
-        return userDtoList;
-    }
-
-
-    @Bean
-    private List<UserTaskDto> getAllTask(){
-        List<UserTaskDto> userDtoList = new ArrayList<>();
-        for(UserTask task: addTaskImpl.getAllTask()){
-            userDtoList
-                    .add(new UserTaskDto(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
-                            ,task.getCreatedAT()));
-        }
-        return userDtoList;
+        model.addAttribute("status",taskImpl.saveTask(userTask));
+        return "redirect:/index";
     }
 }

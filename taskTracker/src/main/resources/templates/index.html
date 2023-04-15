@@ -20,16 +20,15 @@
 <body>
     <div class="sidebar">
         <div class="sidebar-logo">
-            <img th:src="@{/images/user-image.jpg}" alt="Task traker logo">
             <div class="sidebar-close" id="sidebar-close">
                 <i class='bx bx-left-arrow-alt'></i>
             </div>
         </div>
         <div class="sidebar-user">
             <div class="sidebar-user-info">
-                <img th:src="@{/images/user-image.png}" alt="User picture" class="profile-image">
+<!--                <img th:src="@{/images/user-image.png}" alt="User picture" class="profile-image">-->
                 <div class="sidebar-user-name">
-                    Chris Ogwuche
+                    <span th:text="${session.name}"></span>
                 </div>
             </div>
         </div>
@@ -73,21 +72,6 @@
                     </li>
                 </ul>
             </li>
-            <li class="sidebar-submenu">
-                <a href="#" class="sidebar-menu-dropdown">
-                    <i class='bx bx-cog'></i>
-                    <span>settings</span>
-                    <div class="dropdown-icon"></div>
-                </a>
-                <ul class="sidebar-menu sidebar-menu-dropdown-content">
-                    <li>
-                        <a href="#" class="darkmode-toggle" id="darkmode-toggle">
-                            darkmode
-                            <span class="darkmode-switch"></span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
         </ul>
     </div>
 
@@ -99,7 +83,7 @@
             </div>
             <div class="main-title">
                 Task Tracker
-                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+                <a th:href="@{/logout}" style="margin-left: 700px; color: darkred;">Logout</a>
             </div>
         </div>
         <div class="main-content">
@@ -122,8 +106,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="task:${allTask}">
-                                        <td>#001</td>
+                                    <tr th:each="task,taskStat:${allTask}" >
+                                        <td th:text="${taskStat.index}"></td>
                                         <td>
                                             <div class="order-owner">
                                                 <img th:src="@{/images/task.png}" alt="user image">
@@ -132,36 +116,57 @@
                                         </td>
                                         <td th:text="${task.getCreatedAT()}"></td>
 
-                                        <td th:switch="${task.getStatus().toString()}">
-                                            <div th:case="'PENDING'" class="payment-status payment-pending">
-                                                <div class="dot"></div>
-                                                <span>Pending</span>
+                                        <div th:switch="${task.getStatus().toString()}">
+                                            <div th:case="'PENDING'" >
+                                                <td>
+                                                    <div class="payment-status payment-pending">
+                                                        <div class="dot"></div>
+                                                        <span>Pending</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                        <option style="display: none">Select One</option>
+                                                        <option th:value="@{/pending(id=${task.getId()})}">Move to Pending</option>
+                                                        <option th:value="@{/in-progress(id=${task.getId()})}">Move to in-Progress</option>
+                                                        <option th:value="@{/completed(id=${task.getId()})}">Move to Completed</option>
+                                                        <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
+                                                    </select>
+                                                </td>
                                             </div>
-                                            <div th:case="'IN_PROGRESS'" class="payment-status payment-pending">
-                                                <div class="dot"></div>
-                                                <span>In Progress</span>
+                                            <div th:case="'IN_PROGRESS'">
+                                                <td>
+                                                    <div  class="payment-status payment-pending">
+                                                        <div class="dot"></div>
+                                                        <span>In Progress</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                        <option style="display: none">Select One</option>
+                                                        <option th:value="@{/pending(id=${task.getId()})}">Move to Pending</option>
+                                                        <option th:value="@{/in-progress(id=${task.getId()})}">Move to in-Progress</option>
+                                                        <option th:value="@{/completed(id=${task.getId()})}">Move to Completed</option>
+                                                        <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
+                                                    </select>
+                                                </td>
+
                                             </div>
-                                            <div th:case="*" class="payment-status payment-paid">
-                                                <div class="dot"></div>
-                                                <span>Completed</span>
+                                            <div th:case="*" >
+                                                <td>
+                                                    <div class="payment-status payment-paid">
+                                                        <div class="dot"></div>
+                                                        <span>Completed</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                        <option style="display: none">Select One</option>
+                                                        <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
+                                                    </select>
+                                                </td>
                                             </div>
-                                        </td>
-<!--                                        <td th:if="${task.getStatus().COMPLETED == true}">-->
-<!--                                            <div class="payment-status payment-paid">-->
-<!--                                                <div class="dot"></div>-->
-<!--                                                <span>Completed</span>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
-                                        <td>
-                                            <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
-                                                <option></option>
-                                                <option th:value="@{/edit(id=${task.getId()})}">Edit</option>
-                                                <option th:value="@{/pending(id=${task.getId()})}">Move to Pending</option>
-                                                <option th:value="@{/in-progress(id=${task.getId()})}">Move to in-Progress</option>
-                                                <option th:value="@{/completed(id=${task.getId()})}">Move to Completed</option>
-                                                <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
-                                            </select>
-                                        </td>
+                                        </div>
                                     </tr>
                                 </tbody>
                             </table>
@@ -180,7 +185,7 @@
             </div>
             <div class="main-title">
                 Task Tracker
-                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+                <a th:href="@{/logout}" style="margin-left: 700px; color: darkred;">Logout</a>
             </div>
         </div>
         <div class="main-content">
@@ -241,7 +246,7 @@
             </div>
             <div class="main-title">
                 Task Tracker
-                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+                <a th:href="@{/logout}" style="margin-left: 700px; color: darkred;">Logout</a>
             </div>
         </div>
         <div class="main-content">
@@ -265,7 +270,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="task: ${pendingTask}">
-                                        <td>#001</td>
+                                        <td th:text="'#'+${taskStat.index}"></td>
                                         <td>
                                             <div class="order-owner">
                                                 <img th:src="@{/images/task.png}" alt="user image">
@@ -281,7 +286,7 @@
                                         </td>
                                         <td>
                                             <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
-                                                <option></option>
+                                                <option style="display: none">Select One</option>
                                                 <option th:value="@{/in-progress(id=${task.getId()})}">Move to Task in Progress</option>
                                                 <option th:value="@{/completed(id=${task.getId()})}">Move to Completed Task</option>
                                                 <option th:value="@{/delete(id=${task.getId()})}">Delete Task</option>
@@ -306,7 +311,7 @@
             </div>
             <div class="main-title">
                 Task Tracker
-                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+                <a th:href="@{/logout}" style="margin-left: 700px; color: darkred;">Logout</a>
             </div>
         </div>
         <div class="main-content">
@@ -330,7 +335,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="task:${inProgressTask}">
-                                        <td>#001</td>
+                                        <td th:text="'#'+${taskStat.index}"></td>
                                         <td>
                                             <div class="order-owner">
                                                 <img th:src="@{/images/task.png}" alt="user image">
@@ -346,7 +351,7 @@
                                         </td>
                                         <td>
                                             <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
-                                                <option></option>
+                                                <option style="display: none">Select One</option>
                                                 <option th:value="@{/pending(id=${task.getId()})}">Move to Pending</option>
                                                 <option th:value="@{/completed(id=${task.getId()})}">Move to Completed</option>
                                                 <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
@@ -371,7 +376,7 @@
             </div>
             <div class="main-title">
                 Task Tracker
-                <a href="#" style="margin-left: 700px; color: darkred;">Logout</a>
+                <a th:href="@{/logout}" style="margin-left: 700px; color: darkred;">Logout</a>
             </div>
         </div>
         <div class="main-content">
@@ -390,11 +395,12 @@
                                         <th>Title</th>
                                         <th>Date Created</th>
                                         <th>Task status</th>
+                                        <th>Edit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="task: ${completedTask}">
-                                        <td>#001</td>
+                                        <td th:text="'#'+${taskStat.index}"></td>
                                         <td>
                                             <div class="order-owner">
                                                 <img th:src="@{/images/task.png}" alt="user image">
@@ -407,6 +413,12 @@
                                                 <div class="dot"></div>
                                                 <span>Completed</span>
                                             </div>
+                                        </td>
+                                        <td>
+                                            <select  onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" name="Edit" style="font-size: 15px">
+                                                <option style="display: none">Select One</option>
+                                                <option th:value="@{/delete(id=${task.getId()})}">Delete</option>
+                                            </select>
                                         </td>
                                     </tr>
                                 </tbody>

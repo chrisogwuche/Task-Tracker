@@ -1,5 +1,6 @@
 package com.decagon.taskTracker.serviceImpl;
 
+import com.decagon.taskTracker.dto.UserTaskDTO;
 import com.decagon.taskTracker.entity.UserTask;
 import com.decagon.taskTracker.enums.Status;
 import com.decagon.taskTracker.repository.TaskRepository;
@@ -13,7 +14,6 @@ import java.util.Optional;
 
 @Component
 public class TaskImpl implements TaskService {
-
 
     @Autowired
     private TaskRepository taskRepository;
@@ -29,23 +29,56 @@ public class TaskImpl implements TaskService {
     }
 
     @Override
-    public List<UserTask> getPendingTask() {
-        return taskRepository.findByStatus(Status.PENDING);
+    public List<UserTaskDTO> getPendingTask() {
+        List<UserTask> allPendingTask = taskRepository.findByStatus(Status.PENDING);
+        List<UserTaskDTO> userDtoList = new ArrayList<>();
+        for(UserTask task: allPendingTask){
+            userDtoList
+                    .add(new UserTaskDTO(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
+                            ,task.getCreatedAT()));
+        }
+
+        return userDtoList;
     }
 
     @Override
-    public List<UserTask> getInProgressTask() {
-        return taskRepository.findByStatus(Status.IN_PROGRESS);
+    public List<UserTaskDTO> getInProgressTask() {
+        List<UserTask> allInProgressTask = taskRepository.findByStatus(Status.IN_PROGRESS);
+        List<UserTaskDTO> userDtoList = new ArrayList<>();
+
+        for(UserTask task: allInProgressTask){
+            userDtoList
+                    .add(new UserTaskDTO(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
+                            ,task.getCreatedAT()));
+        }
+
+        return userDtoList;
     }
 
     @Override
-    public List<UserTask> getCompletedTask() {
-        return taskRepository.findByStatus(Status.COMPLETED);
+    public List<UserTaskDTO> getCompletedTask() {
+        List<UserTask> allCompletedTask = taskRepository.findByStatus(Status.COMPLETED);
+        List<UserTaskDTO> userDtoList = new ArrayList<>();
+
+        for(UserTask task: allCompletedTask){
+            userDtoList
+                    .add(new UserTaskDTO(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
+                            ,task.getCreatedAT()));
+        }
+        return userDtoList;
     }
 
     @Override
-    public List<UserTask> getAllTask() {
-        return taskRepository.findAll();
+    public List<UserTaskDTO> getAllTask() {
+        List<UserTask> allTask = taskRepository.findAll();;
+        List<UserTaskDTO> userDtoList = new ArrayList<>();
+
+        for(UserTask task: allTask){
+            userDtoList
+                    .add(new UserTaskDTO(task.getId().toString(),task.getTitle(),task.getDescription(),task.getStatus()
+                            ,task.getCreatedAT()));
+        }
+        return userDtoList;
     }
 
     @Override
